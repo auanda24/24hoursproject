@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>24HOURS｜时间的双重奏</title>
+<style>
+  :root{
+    --bg:#0a0a0b;
+    --bg-alt:#111113;
+    --bg-card:#151517;
+    --line:rgba(255,255,255,.14);
+    --line-soft:rgba(255,255,255,.07);
+    --text:#f3f2ee;
+    --text-dim:#a3a2a0;
+    --text-mute:#6c6c70;
+    --gold:#e6bd7e;
+    --gold-2:#f2a93b;
+    --amber:#c9684f;
+    --indigo:#6472e8;
+    --indigo-2:#333c8a;
+    --radius:2px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--text-dim);
+  }
+  .eyebrow::before{content:"◇";color:var(--gold-2);font-size:11px;}
+  h1,h2,h3,h4{font-weight:700;letter-spacing:.01em;}
+  .section-title{
+    font-size:34px;letter-spacing:.03em;margin:14px 0 8px;
+  }
+  .section-sub{
+    color:var(--text-dim);font-size:14px;letter-spacing:.05em;margin-bottom:36px;
+  }
+  .divider{height:1px;background:var(--line-soft);width:100%;}
+  .lede{max-width:720px;color:var(--text-dim);font-size:15.5px;}
+  section{position:relative;padding:110px 0;border-bottom:1px solid var(--line-soft);}
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  /* ---------- NAV ---------- */
+  #nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 28px;
+    background:rgba(10,10,11,0);
+    border-bottom:1px solid transparent;
+    transition:background .35s ease,border-color .35s ease,padding .35s ease;
+  }
+  #nav.scrolled{background:rgba(10,10,11,.86);backdrop-filter:blur(10px);border-color:var(--line-soft);padding:12px 28px;}
+  .nav-mark{display:flex;align-items:center;gap:10px;}
+  .nav-mark .logo-icon{height:30px;width:auto;display:block;}
+  .nav-mark .name{font-size:13px;letter-spacing:.28em;text-transform:uppercase;}
+  .nav-links{display:flex;gap:34px;font-size:13px;letter-spacing:.08em;color:var(--text-dim);}
+  .nav-links a{position:relative;padding-bottom:4px;transition:color .25s;}
+  .nav-links a:hover{color:var(--text);}
+  .nav-links a::after{
+    content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--gold-2);
+    transition:width .25s ease;
+  }
+  .nav-links a:hover::after{width:100%;}
+  .nav-cta{
+    border:1px solid var(--line);padding:8px 18px;font-size:12px;letter-spacing:.14em;
+    transition:border-color .25s,color .25s;
+  }
+  .nav-cta:hover{border-color:var(--gold-2);color:var(--gold-2);}
+  .nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+  .nav-toggle span{width:22px;height:1px;background:var(--text);}
+
+  /* ---------- HERO ---------- */
+  #hero{
+    min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
+    text-align:center;padding-top:120px;padding-bottom:80px;position:relative;
+    background:
+      radial-gradient(ellipse 60% 40% at 22% 30%, rgba(230,189,126,.10), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 78% 72%, rgba(100,114,232,.14), transparent 60%),
+      var(--bg);
+  }
+  .hero-ring{
+    position:absolute;border:1px solid var(--line-soft);border-radius:50%;
+    width:640px;height:640px;top:50%;left:50%;transform:translate(-50%,-50%);
+    animation:spin 90s linear infinite;
+  }
+  .hero-ring.r2{width:840px;height:840px;animation-duration:130s;animation-direction:reverse;border-style:dashed;opacity:.6;}
+  @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg);}}
+  .hero-logo{width:150px;margin:0 auto 26px;filter:drop-shadow(0 0 40px rgba(230,189,126,.14));}
+  .hero-title{
+    font-size:clamp(46px,8vw,96px);letter-spacing:.06em;line-height:1;
+    background:linear-gradient(100deg,#fff 0%, var(--gold) 45%, #fff 55%, var(--indigo) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero-cn{
+    margin-top:18px;font-size:20px;letter-spacing:.5em;color:var(--text-dim);
+    padding-left:.5em;
+  }
+  .hero-en{
+    margin-top:22px;font-size:12.5px;letter-spacing:.18em;color:var(--text-mute);
+    text-transform:uppercase;font-style:italic;
+  }
+  .hero-clock{
+    margin-top:46px;display:flex;align-items:center;gap:12px;
+    font-size:13px;letter-spacing:.12em;color:var(--text-dim);
+  }
+  .hero-clock .dot{width:5px;height:5px;border-radius:50%;background:var(--gold-2);animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:.35;}50%{opacity:1;}}
+  #live-clock{font-variant-numeric:tabular-nums;color:var(--text);letter-spacing:.08em;}
+  .scroll-cue{
+    position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+    font-size:11px;letter-spacing:.2em;color:var(--text-mute);display:flex;flex-direction:column;align-items:center;gap:8px;
+  }
+  .scroll-cue .line{width:1px;height:34px;background:linear-gradient(var(--text-mute),transparent);animation:drop 1.8s ease-in-out infinite;}
+  @keyframes drop{0%{opacity:0;transform:translateY(-6px);}50%{opacity:1;}100%{opacity:0;transform:translateY(10px);}}
+
+  /* ---------- CONCEPT ---------- */
+  .concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-top:20px;}
+  .concept-copy p{color:var(--text-dim);margin-bottom:18px;font-size:15.5px;}
+  .concept-copy p strong{color:var(--text);font-weight:600;}
+  .quote-block{
+    border-left:2px solid var(--gold-2);padding:6px 0 6px 22px;margin:30px 0;
+  }
+  .quote-block p{font-size:19px;color:var(--text);font-style:italic;line-height:1.6;}
+  .split-orb{
+    position:relative;width:100%;aspect-ratio:1/1;max-width:380px;margin:0 auto;
+    border-radius:50%;
+    background:
+      conic-gradient(from 90deg, var(--gold) 0deg, var(--gold-2) 178deg, var(--indigo-2) 182deg, var(--indigo) 360deg);
+    box-shadow:0 0 90px rgba(230,189,126,.08), inset 0 0 60px rgba(0,0,0,.5);
+  }
+  .split-orb::before{
+    content:"";position:absolute;inset:14%;border-radius:50%;background:var(--bg);
+    display:flex;
+  }
+  .split-orb .orb-label{
+    position:absolute;top:50%;transform:translateY(-50%);
+    font-size:11px;letter-spacing:.22em;
+  }
+  .split-orb .orb-label.left{left:8%;}
+  .split-orb .orb-label.right{right:8%;text-align:right;}
+  .orb-center{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;
+  }
+  .orb-center .n24{font-size:34px;letter-spacing:.08em;}
+  .orb-center .n24-sub{font-size:10px;letter-spacing:.3em;color:var(--text-mute);margin-top:4px;}
+
+  .faction-tags{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap;}
+  .faction-tag{
+    border:1px solid var(--line);padding:9px 16px;font-size:12px;letter-spacing:.12em;
+    display:flex;align-items:center;gap:8px;
+  }
+  .faction-tag .swatch{width:8px;height:8px;border-radius:50%;}
+  .faction-tag.auroral .swatch{background:var(--gold-2);}
+  .faction-tag.dark .swatch{background:var(--indigo);}
+
+  /* ---------- WORLD ---------- */
+  #world{background:var(--bg-alt);}
+  .world-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;}
+  .dial-wrap{position:relative;width:100%;max-width:400px;margin:0 auto;aspect-ratio:1/1;}
+  .dial-face{
+    position:absolute;inset:0;border-radius:50%;
+    background:
+      conic-gradient(from -90deg,
+        rgba(230,189,126,.18) 0deg, rgba(242,169,59,.28) 90deg,
+        rgba(51,60,138,.10) 180deg, rgba(100,114,232,.24) 270deg,
+        rgba(230,189,126,.18) 360deg);
+    border:1px solid var(--line);
+  }
+  .dial-face::after{
+    content:"";position:absolute;inset:14%;border-radius:50%;background:var(--bg-alt);border:1px solid var(--line-soft);
+  }
+  .dial-mark{
+    position:absolute;font-size:13px;letter-spacing:.05em;color:var(--text-dim);
+    transform:translate(-50%,-50%);
+  }
+  .dial-center{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .dial-center .cap{font-size:11px;letter-spacing:.22em;color:var(--text-mute);}
+  .dial-center .big{font-size:15px;letter-spacing:.14em;margin-top:6px;}
+  .world-copy p{color:var(--text-dim);margin-bottom:18px;font-size:15.5px;}
+  .world-copy p strong{color:var(--text);}
+  .world-copy .highlight{color:var(--text);border-bottom:1px solid var(--line);padding-bottom:2px;}
+
+  /* ---------- MEMBERS ---------- */
+  .member-intro{max-width:760px;color:var(--text-dim);font-size:15.5px;margin-bottom:56px;}
+  .members-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+  .member-card{
+    background:var(--bg-card);border:1px solid var(--line-soft);position:relative;overflow:hidden;
+    display:flex;flex-direction:column;transition:border-color .3s,transform .3s;
+  }
+  .member-card:hover{transform:translateY(-6px);}
+  .member-card.side-auroral:hover{border-color:rgba(230,189,126,.5);}
+  .member-card.side-dark:hover{border-color:rgba(100,114,232,.5);}
+  .member-visual{
+    height:340px;position:relative;overflow:hidden;
+    filter:grayscale(1) contrast(1.08);
+  }
+  .member-visual .visual-img{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;z-index:1;
+  }
+  .member-visual::after{
+    content:"";position:absolute;inset:0;z-index:2;
+    background:linear-gradient(to bottom, rgba(15,15,17,0) 45%, var(--bg-card) 100%);
+  }
+  .member-avatar{
+    position:absolute;top:16px;right:16px;width:52px;height:52px;border-radius:50%;overflow:hidden;
+    border:1.5px solid var(--line);background:#000;z-index:3;
+  }
+  .member-avatar img{width:100%;height:100%;object-fit:cover;object-position:center center;filter:grayscale(1);transform:scale(1.16);}
+  .member-card.side-auroral .member-avatar{border-color:var(--gold-2);}
+  .member-card.side-dark .member-avatar{border-color:var(--indigo);}
+  .member-time{
+    position:absolute;top:16px;left:16px;font-size:13px;letter-spacing:.08em;z-index:3;
+    color:var(--text);background:transparent;padding:4px 10px;border:none;
+    text-shadow:0 1px 6px rgba(0,0,0,.9), 0 0 16px rgba(0,0,0,.7);
+  }
+  .member-body{padding:20px 20px 24px;position:relative;z-index:2;flex:1;display:flex;flex-direction:column;}
+  .member-name{font-size:21px;letter-spacing:.06em;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+  .member-alias{font-size:12.5px;color:var(--text-dim);font-weight:400;letter-spacing:.04em;}
+  .member-side{font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin:8px 0 16px;}
+  .member-card.side-auroral .member-side{color:var(--gold-2);}
+  .member-card.side-dark .member-side{color:var(--indigo);}
+  .member-block{font-size:13.5px;color:var(--text-dim);margin-bottom:12px;}
+  .member-block b{color:var(--text);font-weight:600;display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px;}
+  .member-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;margin-bottom:16px;}
+  .member-tags span{font-size:11px;color:var(--text-dim);border:1px solid var(--line-soft);padding:3px 9px;}
+  .member-status{
+    margin-top:auto;padding-top:14px;border-top:1px solid var(--line-soft);
+    font-size:11px;letter-spacing:.12em;color:var(--text-mute);display:flex;align-items:center;gap:8px;
+  }
+  .member-status .pip{width:6px;height:6px;border-radius:50%;background:var(--gold-2);animation:pulse 2s ease-in-out infinite;}
+  .member-card.side-dark .member-status .pip{background:var(--indigo);}
+
+  /* ---------- FUTURE ---------- */
+  #future{background:var(--bg-alt);text-align:center;}
+  .future-copy{max-width:760px;margin:0 auto 60px;color:var(--text-dim);font-size:15.5px;text-align:left;}
+  .future-copy p{margin-bottom:16px;}
+  .future-copy strong{color:var(--text);}
+  #timeline-dial{position:relative;width:min(560px,90vw);height:min(560px,90vw);margin:0 auto;}
+  .slot{
+    position:absolute;width:30px;height:30px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:10px;color:var(--text-mute);border:1px solid var(--line);
+    background:var(--bg-alt);transform:translate(-50%,-50%);transition:transform .25s;
+  }
+  .slot:hover{transform:translate(-50%,-50%) scale(1.18);}
+  .slot.filled{color:var(--bg);font-weight:700;border-color:transparent;}
+  .slot.filled.auroral{background:var(--gold-2);box-shadow:0 0 24px rgba(242,169,59,.5);}
+  .slot.filled.dark{background:var(--indigo);box-shadow:0 0 24px rgba(100,114,232,.5);}
+  #timeline-dial .center-copy{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    text-align:center;
+  }
+  #timeline-dial .center-copy .num{font-size:44px;letter-spacing:.05em;}
+  #timeline-dial .center-copy .lab{font-size:11px;letter-spacing:.24em;color:var(--text-mute);margin-top:4px;}
+  .future-legend{display:flex;justify-content:center;gap:30px;margin-top:44px;font-size:12px;color:var(--text-dim);letter-spacing:.05em;}
+  .future-legend span{display:inline-flex;align-items:center;gap:8px;}
+  .future-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .future-legend .dot.on{background:var(--gold-2);}
+  .future-legend .dot.off{border:1px solid var(--line);}
+
+  /* ---------- JOIN ---------- */
+  .join-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;}
+  .join-copy .eyebrow{margin-bottom:18px;}
+  .join-list{list-style:none;margin:26px 0 0;}
+  .join-list li{
+    padding:14px 0;border-top:1px solid var(--line-soft);color:var(--text-dim);font-size:14.5px;
+    display:flex;gap:10px;
+  }
+  .join-list li::before{content:"◇";color:var(--gold-2);}
+  .join-list li:last-child{border-bottom:1px solid var(--line-soft);}
+  .join-quote{
+    margin-top:32px;font-size:16.5px;font-style:italic;color:var(--text);border-left:2px solid var(--indigo);
+    padding-left:18px;
+  }
+  .join-panel{
+    background:var(--bg-card);border:1px solid var(--line-soft);padding:38px 34px;
+  }
+  .join-panel h4{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);margin-bottom:20px;}
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px;}
+  .field-chip{
+    border:1px solid var(--line-soft);padding:12px 14px;font-size:12.5px;color:var(--text-dim);
+    display:flex;align-items:center;gap:8px;
+  }
+  .field-chip::before{content:"";width:5px;height:5px;background:var(--gold-2);flex:0 0 auto;}
+  .join-note{font-size:12px;color:var(--text-mute);line-height:1.7;margin-bottom:26px;}
+  .join-cta{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    border:1px solid var(--text);padding:16px 22px;font-size:13px;letter-spacing:.1em;
+    transition:background .25s,color .25s;
+  }
+  .join-cta:hover{background:var(--text);color:var(--bg);}
+  .join-cta span.arrow{transition:transform .25s;}
+  .join-cta:hover span.arrow{transform:translateX(4px);}
+  .join-status{
+    margin-top:18px;font-size:11px;letter-spacing:.1em;color:var(--text-mute);text-align:center;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{padding:60px 0 34px;border-bottom:none;}
+  .foot-grid{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;}
+  .foot-brand{display:flex;align-items:center;gap:12px;}
+  .foot-brand img{width:34px;}
+  .foot-brand .t{font-size:14px;letter-spacing:.22em;}
+  .foot-tag{color:var(--text-mute);font-size:12px;margin-top:10px;max-width:280px;letter-spacing:.03em;}
+  .foot-links{display:flex;gap:50px;flex-wrap:wrap;}
+  .foot-col h5{font-size:11px;letter-spacing:.18em;color:var(--text-mute);text-transform:uppercase;margin-bottom:14px;}
+  .foot-col a,.foot-col p{display:block;font-size:13px;color:var(--text-dim);margin-bottom:8px;}
+  .foot-bottom{
+    margin-top:50px;padding-top:22px;border-top:1px solid var(--line-soft);
+    display:flex;justify-content:space-between;color:var(--text-mute);font-size:11px;letter-spacing:.04em;flex-wrap:wrap;gap:10px;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:960px){
+    .concept-grid,.world-grid,.join-grid{grid-template-columns:1fr;gap:40px;}
+    .members-grid{grid-template-columns:repeat(2,1fr);}
+    .field-grid{grid-template-columns:1fr;}
+    section{padding:80px 0;}
+  }
+  @media (max-width:680px){
+    .nav-links{display:none;}
+    .nav-toggle{display:flex;}
+    .members-grid{grid-template-columns:1fr;}
+    .hero-cn{letter-spacing:.32em;font-size:16px;}
+    .section-title{font-size:26px;}
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="#hero" class="nav-mark">
+    <img class="logo-icon" src="https://marvy.meetsocial.cn/file/RyCJbhwSG2GsM0gYsR3spA/logo_transparent_white.png" alt="24HOURS">
+    <span class="name">24Hours</span>
+  </a>
+  <div class="nav-links">
+    <a href="#concept">核心概念</a>
+    <a href="#world">世界观</a>
+    <a href="#members">刻印者</a>
+    <a href="#future">未来展望</a>
+    <a href="#join">招募</a>
+  </div>
+  <a href="#join" class="nav-cta">加入我们</a>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <div class="hero-ring"></div>
+  <div class="hero-ring r2"></div>
+  <img class="hero-logo" src="https://marvy.meetsocial.cn/file/RyCJbhwSG2GsM0gYsR3spA/logo_transparent_white.png" alt="24HOURS Logo">
+  <h1 class="hero-title">24HOURS</h1>
+  <p class="hero-cn">时&nbsp;间&nbsp;的&nbsp;双&nbsp;重&nbsp;奏</p>
+  <p class="hero-en">A 24-Hour Journey Between Dark and Auroral</p>
+  <div class="hero-clock">
+    <span class="dot"></span>
+    <span>此刻 · <span id="live-clock">--:--:--</span></span>
+  </div>
+  <div class="scroll-cue"><span class="line"></span>SCROLL</div>
+</section>
+
+<!-- ============ CONCEPT ============ -->
+<section id="concept">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">Core Concept · 核心概念</span>
+      <h2 class="section-title">光与影，本是一体</h2>
+    </div>
+    <div class="concept-grid" style="margin-top:44px;">
+      <div class="concept-copy reveal">
+        <p>时间是单向的流逝，但在我们的世界里，<strong>时间是一个闭环的圆</strong>。</p>
+        <p>我们将一天切割为<strong>光（Day Side / AURORAL）</strong>与<strong>影（Night Side / DARK）</strong>，它们看似对立，实则互为表里。白昼是黑夜的"面具"，黑夜是白昼的"真相"。</p>
+        <div class="quote-block">
+          <p>"我们不是时间的奴隶，我们是时间本身。"</p>
+        </div>
+        <p>在这个企划中，没有绝对的"正反"，只有完整的"循环"。每一位成员都是拨动时针的齿轮，我们将以<strong>大队（Full Team）</strong>、<strong>光之小队（AURORAL / Day Side）</strong>、<strong>影之小队（DARK / Night Side）</strong>甚至跨时区混编的形式，在舞台上缔造永不重复的"此时此刻"。</p>
+        <div class="faction-tags">
+          <span class="faction-tag auroral"><span class="swatch"></span>AURORAL · 光之阵营</span>
+          <span class="faction-tag dark"><span class="swatch"></span>DARK · 影之阵营</span>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="split-orb">
+          <div class="orb-center">
+            <div class="n24">24</div>
+            <div class="n24-sub">HOURS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORLD ============ -->
+<section id="world">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">Worldview · 世界观</span>
+      <h2 class="section-title">钟表盘的宇宙</h2>
+      <p class="section-sub">The Clocktower Universe</p>
+    </div>
+    <div class="world-grid">
+      <div class="reveal">
+        <div class="dial-wrap">
+          <div class="dial-face"></div>
+          <div class="dial-mark" style="top:6%;left:50%;">12</div>
+          <div class="dial-mark" style="top:50%;left:94%;">18</div>
+          <div class="dial-mark" style="top:94%;left:50%;">24</div>
+          <div class="dial-mark" style="top:50%;left:6%;">6</div>
+          <div class="dial-center">
+            <div class="cap">ZERO POINT</div>
+            <div class="big">光影和解之刻</div>
+          </div>
+        </div>
+      </div>
+      <div class="world-copy reveal">
+        <p>在现实世界的夹缝中，存在着一个名为<strong class="highlight">"24Hours"</strong>的异空间。这里有一座巨大的、永远运转的钟塔。</p>
+        <p>钟塔的<strong>右半圈（6点→12点）</strong>是被阳光祝福的<strong>"极昼领域"</strong>，这里流淌着希望、汗水与赤裸裸的真诚；</p>
+        <p>钟塔的<strong>左半圈（18点→24点）</strong>是被月光浸染的<strong>"永夜领域"</strong>，这里涌动着欲望、暧昧与深不见底的吸引力。</p>
+        <p>只有当所有指针在<strong class="highlight">零点重合</strong>，钟塔才会显露出完整的形态——那是我们作为<strong>"24Hours"</strong>出场之时，是<strong>光与影和解的瞬间</strong>。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MEMBERS ============ -->
+<section id="members">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">The Founders · 初始四名成员</span>
+      <h2 class="section-title">刻印者</h2>
+      <p class="section-sub">The 24 Guardians — First Engravers</p>
+    </div>
+    <p class="member-intro reveal">我们正在寻找最先觉醒的 <strong style="color:var(--text)">4 位"刻印者"</strong>，他们将作为基石，钉住时间轴的两端。</p>
+
+    <div class="members-grid">
+
+      <!-- DAWN -->
+      <article class="member-card side-auroral reveal">
+        <div class="member-visual">
+          <img class="visual-img" src="https://marvy.meetsocial.cn/file/Az70yd8wdMZPNi7Bl7sqFQ/p4_dawn.jpg" alt="DAWN 全身立绘">
+          <span class="member-time">06:00 AM</span>
+          <span class="member-avatar"><img src="https://marvy.meetsocial.cn/file/x6Us36W9u9Gs_gA3cC4r-A/p5_dawn.png" alt="DAWN"></span>
+        </div>
+        <div class="member-body">
+          <h3 class="member-name">DAWN <span class="member-alias">破晓之白</span></h3>
+          <p class="member-side">AURORAL · 白昼侧 · 光之基石</p>
+          <p class="member-block"><b>角色定位</b>清新的"始动者"。带着露水气息的末子（老幺）担当。</p>
+          <p class="member-block"><b>性格</b>如同冬日里第一缕穿透窗帘的阳光，温暖、羞涩且纯粹。拥有毫无杂质的笑容，是团队的"治愈缓冲带"。对世界充满好奇，偶尔的笨拙反而让人心生怜爱。</p>
+          <p class="member-block"><b>外形印象</b>奶油色系的柔软少年感，线条柔和，眼神清澈。</p>
+          <div class="member-tags"><span>#童颜治愈</span><span>#清爽盐系</span><span>#晨间活力</span></div>
+          <div class="member-status"><span class="pip"></span>招募中 · 席位待刻印</div>
+        </div>
+      </article>
+
+      <!-- SOL -->
+      <article class="member-card side-auroral reveal">
+        <div class="member-visual">
+          <img class="visual-img" src="https://marvy.meetsocial.cn/file/uuKhGXylpGrm0AB7Yz9R2g/p4_sol.jpg" alt="SOL 全身立绘">
+          <span class="member-time">12:00 PM</span>
+          <span class="member-avatar"><img src="https://marvy.meetsocial.cn/file/mpCkQhXRtAl1wQkz1rPZoQ/p5_sol.png" alt="SOL"></span>
+        </div>
+        <div class="member-body">
+          <h3 class="member-name">SOL <span class="member-alias">日冕之耀</span></h3>
+          <p class="member-side">AURORAL · 白昼侧 · 光之顶点</p>
+          <p class="member-block"><b>角色定位</b>炙热的"驱动者"。正午太阳的具象化，绝对的元气核心。</p>
+          <p class="member-block"><b>性格</b>耀眼得让人无法直视的开朗，舞台上的能量永动机。看似大大咧咧、拥有过剩的自信，实则比谁都在意伙伴，会在暗处默默拉起跌倒者的手。他是白昼最锋利的剑。</p>
+          <p class="member-block"><b>外形印象</b>充满生命力的运动系，笑容灿烂如盛夏，眼睛里有星星。</p>
+          <div class="member-tags"><span>#阳光开朗</span><span>#犬系男友</span><span>#热血笨蛋</span></div>
+          <div class="member-status"><span class="pip"></span>招募中 · 席位待刻印</div>
+        </div>
+      </article>
+
+      <!-- DUSK -->
+      <article class="member-card side-dark reveal">
+        <div class="member-visual">
+          <img class="visual-img" src="https://marvy.meetsocial.cn/file/fXjT0ckbE1YETzzpN4XnfQ/p4_dusk.jpg" alt="DUSK 全身立绘">
+          <span class="member-time">06:00 PM</span>
+          <span class="member-avatar"><img src="https://marvy.meetsocial.cn/file/LzchT8Jg1bDeB50T_DDpIw/p5_dusk.png" alt="DUSK"></span>
+        </div>
+        <div class="member-body">
+          <h3 class="member-name">DUSK <span class="member-alias">黄昏之蚀</span></h3>
+          <p class="member-side">DARK · 黑夜侧 · 影之过渡</p>
+          <p class="member-block"><b>角色定位</b>诱人的"调停者"。介于白昼与黑夜之间的混沌美学，年上成熟感担当。</p>
+          <p class="member-block"><b>性格</b>日落时分的暧昧化身。说话语速偏慢，带着慵懒的鼻音，擅长用温柔包裹着疏离感。拥有看透一切的洞察力，善于在团队中调节气氛，但自己的内心却像黄昏的天际线，永远看不真切。</p>
+          <p class="member-block"><b>外形印象</b>身形修长，眼尾微挑，带有琥珀色的深邃感，举手投足间散发着洗练的性感。</p>
+          <div class="member-tags"><span>#成熟魅惑</span><span>#低音炮</span><span>#氛围感天才</span></div>
+          <div class="member-status"><span class="pip"></span>招募中 · 席位待刻印</div>
+        </div>
+      </article>
+
+      <!-- ZERO -->
+      <article class="member-card side-dark reveal">
+        <div class="member-visual">
+          <img class="visual-img" src="https://marvy.meetsocial.cn/file/gw8wDFSS6jw1WXRGCTwd-w/p4_zero.jpg" alt="ZERO 全身立绘">
+          <span class="member-time">12:00 AM</span>
+          <span class="member-avatar"><img src="https://marvy.meetsocial.cn/file/Xl5udj8ZYWa2fpubRrrScg/p5_zero.png" alt="ZERO"></span>
+        </div>
+        <div class="member-body">
+          <h3 class="member-name">ZERO <span class="member-alias">子夜之镜</span></h3>
+          <p class="member-side">DARK · 黑夜侧 · 影之深渊</p>
+          <p class="member-block"><b>角色定位</b>神秘的"破格者"。万籁俱寂的深夜，打破一切规则的存在。</p>
+          <p class="member-block"><b>性格</b>极致的神秘与清冷。惜字如金，但每一次舞台的肢体语言都像在窥探你的灵魂。他是映照观众内心欲望的镜子，不主动迎合，却让人无法移开视线。看似距离感极强，实则对"24Hours"的执念比任何人都要深。</p>
+          <p class="member-block"><b>外形印象</b>苍白肤色与深蓝发丝，眼神锐利且带有非日常感的压迫力，舞台妆造极具视觉冲击。</p>
+          <div class="member-tags"><span>#冰山美人</span><span>#蛊系舞台</span><span>#神秘主义</span></div>
+          <div class="member-status"><span class="pip"></span>招募中 · 席位待刻印</div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ FUTURE ============ -->
+<section id="future">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="eyebrow">What's Next · 未来展望</span>
+      <h2 class="section-title">时之洪流</h2>
+    </div>
+    <div class="future-copy reveal">
+      <p>在 4 名基石站稳后，我们将逐步开启<strong>"时之洪流"</strong>计划，让更多时段的伙伴陆续加入这个正在生长的时间闭环。</p>
+      <p>届时，我们将不再区分单纯的昼夜，而是通过随机重组（Day / Night / Evening / Midnight 等混编小分队），探索音乐风格的无限可能。也许这一次演出是<strong>"6点 + 18点"</strong>的黄昏叙事，下一次就是<strong>"12点 + 24点"</strong>的极端碰撞。</p>
+    </div>
+    <div id="timeline-dial" class="reveal">
+      <div class="center-copy">
+        <div class="num">4</div>
+        <div class="lab">ENGRAVED · 已刻印</div>
+      </div>
+    </div>
+    <div class="future-legend">
+      <span><i class="dot on"></i>已刻印 · 06 / 12 / 18 / 24</span>
+      <span><i class="dot off"></i>待刻印 · 更多时段席位</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ JOIN ============ -->
+<section id="join">
+  <div class="wrap">
+    <div class="join-grid">
+      <div class="join-copy reveal">
+        <span class="eyebrow">Recruiting · 招募</span>
+        <h2 class="section-title">我们寻找的你</h2>
+        <ul class="join-list">
+          <li>想要在"光明"中挥洒汗水，或是敢于在"黑暗"中沉沦演技。</li>
+          <li>能驾驭强烈概念，接受高强度的舞台表现力训练。</li>
+          <li>认同"昼夜一体"的哲学，愿意与伙伴共同构筑完整的时间闭环。</li>
+        </ul>
+        <p class="join-quote">指针已经转动，你，会是下一个刻度吗？</p>
+      </div>
+
+      <div class="join-panel reveal">
+        <h4>报名需提供信息</h4>
+        <div class="field-grid">
+          <div class="field-chip">昵称 / 艺名</div>
+          <div class="field-chip">年龄</div>
+          <div class="field-chip">身高体重</div>
+          <div class="field-chip">才艺方向（唱 / 跳 / Rap / 器乐）</div>
+          <div class="field-chip">所在城市 / 地区</div>
+          <div class="field-chip">社交账号或作品链接</div>
+          <div class="field-chip" style="grid-column:1/-1;">自我介绍 / 申请理由</div>
+        </div>
+        <p class="join-note">初始席位仅开放 4 位，对应 06:00 / 12:00 / 18:00 / 24:00。未来项目将持续扩充更多时段的席位，现在成为"刻印者"，即是这段时间闭环最初的坐标点。</p>
+        <a class="join-cta" href="https://www.wenjuan.com/s/UZBZJvHc3e/#" target="_blank" rel="noopener noreferrer">
+          <span>填写报名问卷</span>
+          <span class="arrow">→</span>
+        </a>
+        <p class="join-note" style="margin:14px 0 0;text-align:center;">或通过邮箱联系：<a href="mailto:Project_24Hours@163.com" style="color:var(--text-dim);text-decoration:underline;">Project_24Hours@163.com</a></p>
+        <p class="join-status">当前招募状态：<span style="color:var(--gold-2)">4 席开放中</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">
+          <img src="https://marvy.meetsocial.cn/file/RyCJbhwSG2GsM0gYsR3spA/logo_transparent_white.png" alt="24HOURS">
+          <span class="t">24HOURS</span>
+        </div>
+        <p class="foot-tag">时间的双重奏 —— 一座永不停摆的钟塔，四道正在苏醒的指针。</p>
+      </div>
+      <div class="foot-links">
+        <div class="foot-col">
+          <h5>Navigate</h5>
+          <a href="#concept">核心概念</a>
+          <a href="#world">世界观</a>
+          <a href="#members">刻印者</a>
+          <a href="#future">未来展望</a>
+        </div>
+        <div class="foot-col">
+          <h5>Contact</h5>
+          <a href="mailto:Project_24Hours@163.com">Project_24Hours@163.com</a>
+          <p>社交账号筹备中，敬请期待</p>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 24HOURS PROJECT. FICTIONAL WORLDVIEW SITE.</span>
+      <span>ZERO POINT · WHERE DARK MEETS AURORAL</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // live clock
+  function tickClock(){
+    var d = new Date();
+    var pad = function(n){return n.toString().padStart(2,'0');};
+    var el = document.getElementById('live-clock');
+    if(el){ el.textContent = pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds()); }
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  // nav scroll state
+  var navEl = document.getElementById('nav');
+  window.addEventListener('scroll', function(){
+    if(window.scrollY > 40){ navEl.classList.add('scrolled'); }
+    else{ navEl.classList.remove('scrolled'); }
+  });
+
+  // reveal on scroll
+  var reveals = document.querySelectorAll('.reveal');
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){ entry.target.classList.add('in'); }
+    });
+  }, {threshold:.15});
+  reveals.forEach(function(el){ io.observe(el); });
+
+  // circular 24h timeline dial
+  function buildDial(){
+    var wrap = document.getElementById('timeline-dial');
+    if(!wrap) return;
+    // clear previous slots (keep center-copy)
+    var olds = wrap.querySelectorAll('.slot');
+    olds.forEach(function(s){ s.remove(); });
+
+    var rect = wrap.getBoundingClientRect();
+    var size = rect.width;
+    var radius = size/2 - 20;
+    var cx = size/2, cy = size/2;
+    var filledHours = {0:'auroral',6:'auroral',12:'auroral',18:'dark'};
+    // 06 & 12 -> auroral, 18 -> dark, 24(=0) -> dark (zero point, night side closing)
+    filledHours = {6:'auroral',12:'auroral',18:'dark',0:'dark'};
+
+    for(var h=0; h<24; h++){
+      var angle = (h/24)*2*Math.PI - Math.PI/2;
+      var x = cx + radius*Math.cos(angle);
+      var y = cy + radius*Math.sin(angle);
+      var slot = document.createElement('div');
+      slot.className = 'slot';
+      var label = (h===0)?'24':(h<10?'0'+h:h);
+      slot.textContent = label;
+      slot.style.left = x+'px';
+      slot.style.top = y+'px';
+      if(filledHours.hasOwnProperty(h)){
+        slot.classList.add('filled', filledHours[h]);
+        slot.title = label+':00 · 已刻印';
+      } else {
+        slot.title = label+':00 · 待刻印';
+      }
+      wrap.appendChild(slot);
+    }
+  }
+  buildDial();
+  var resizeTimer;
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(buildDial, 200);
+  });
+
+  // mobile nav (simple anchor-based fallback: smooth scroll already via CSS)
+</script>
+
+</body>
+</html>
